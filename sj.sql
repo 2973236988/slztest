@@ -1,0 +1,11 @@
+CREATE TABLE USER(
+uid INT PRIMARY KEY AUTO_INCREMENT,
+username VARCHAR(32),
+PASSWORD VARCHAR(32),
+email VARCHAR(32),
+studentId VARCHAR(32),
+gender VARCHAR(1),
+college VARCHAR(32),
+category VARCHAR(32),
+status VARCHAR(1)
+);

@@ -3,24 +3,14 @@ package com.hedgeway.www.po;
 import java.util.List;
 
 /**
- * @Description:
- * @Class: Page
- * @Package: cn.ithedge.csdn.domain
- * @Author: hedgeway
- * @CreateTime: 2022/10/20 11:02
+ * 分页对象
  */
-public class Page<T> {
-    // 总数据量
-    private int totalCount;
-    // 总页码
-    private int totalPage;
-    // 每页的数据
-    private List<T> list;
-    //当前页码
-    private int currentPage;
-    //每页显示的记录数
-    private int rows = 10;
-
+public class PageBean<T> {
+    private int totalCount; // 总记录数
+    private int totalPage ; // 总页码
+    private List<T> list ; // 每页的数据
+    private int currentPage ; //当前页码
+    private int rows;//每页显示的记录数
 
     public int getTotalCount() {
         return totalCount;
@@ -61,5 +51,15 @@ public class Page<T> {
     public void setRows(int rows) {
         this.rows = rows;
     }
-}
 
+    @Override
+    public String toString() {
+        return "PageBean{" +
+                "totalCount=" + totalCount +
+                ", totalPage=" + totalPage +
+                ", list=" + list +
+                ", currentPage=" + currentPage +
+                ", rows=" + rows +
+                '}';
+    }
+}

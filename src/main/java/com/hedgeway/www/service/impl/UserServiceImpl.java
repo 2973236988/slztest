@@ -3,29 +3,123 @@ package com.hedgeway.www.service.impl;
 
 import com.hedgeway.www.dao.UserDao;
 import com.hedgeway.www.dao.impl.UserDaoImpl;
+import com.hedgeway.www.po.PageBean;
 import com.hedgeway.www.po.User;
 import com.hedgeway.www.service.UserService;
 
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
 public class UserServiceImpl implements UserService {
 
-    private UserDao userDao = new UserDaoImpl();
-
-
-
+    private UserDao dao = new UserDaoImpl();
     /**
      * 登录方法
-     * @param user
-     * @return
      */
     @Override
     public User login(User user) {
         User usr = null;
         try {
-            usr =  userDao.findByUsernameAndPassword(user.getUsername(),user.getPassword());
+            usr =  dao.findByUsernameAndPassword(user.getUsername(),user.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
         }
         return usr;
+    }
+
+    @Override
+    public List<User> findAll() {
+        List<User> users = null;
+        try {
+            users = dao.findAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    @Override
+    public void addUser(User user) {
+        dao.add(user);
+    }
+
+    @Override
+    public void deleteUser(String id) {
+        dao.delete(Integer.parseInt(id));
+    }
+
+    @Override
+    public User findUserById(String id) {
+        User u = new User();
+        try {
+            u = dao.findById(Integer.parseInt(id));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return u;
+    }
+
+    @Override
+    public void updateUser(User user) {
+        dao.update(user);
+    }
+
+    @Override
+    public void delSelectedUser(String[] ids) {
+        if (ids != null && ids.length > 0) {
+            //1.遍历数组
+            for (String id : ids) {
+                //2.调用dao的方法删除
+                dao.delete(Integer.parseInt(id));
+            }
+        }
+    }
+
+    @Override
+    public PageBean<User> findUserByPage(String _currentPage, String _rows, Map<String, String[]> condition) {
+        int currentPage = Integer.parseInt(_currentPage);
+        int rows = Integer.parseInt(_rows);
+
+        //1.创建空的PageBean对象
+        PageBean<User> pb = new PageBean<>();
+        //2.设置参数
+        pb.setRows(rows);
+
+        //3.调用dao查询总记录数
+        //int totalCount = dao.findTotalCount();
+        int totalCount = 0;
+        try {
+            totalCount = dao.findTotalCount(condition);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        pb.setTotalCount(totalCount);
+
+        //4.计算总页码
+        int totalPage = (totalCount % rows) == 0 ? totalCount / rows : (totalCount / rows + 1);
+        pb.setTotalPage(totalPage);
+        //使用后台代码优化：上一页、下一页边界禁用
+        if (currentPage <= 0) {
+            currentPage = 1;
+        } else if (currentPage >= totalPage) {
+            currentPage = totalPage;
+        }
+        pb.setCurrentPage(currentPage);
+
+        //5.调用dao查询List集合
+        //计算开始的记录索引
+        int start = (currentPage - 1) * rows;
+        //List<User> list = dao.findByPage(start, rows);
+        List<User> list = null;
+        try {
+            list = dao.findByPage(start, rows, condition);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        pb.setList(list);
+
+        return pb;
     }
 
 }

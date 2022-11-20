@@ -40,6 +40,16 @@ public class DBUtils {
         }
     }
 
+    public static ResultSet executeQuery(String sql) {
+        try {
+            pstmt =  connection.prepareStatement(sql);
+            set = pstmt.executeQuery();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return set;
+    }
+
     public static ResultSet executeQuery(String sql,Object param) {
         try {
             createPreParedStatement(sql,param);
