@@ -53,7 +53,9 @@ public class DBUtils {
     public static ResultSet executeQuery(String sql,Object param) {
         try {
             createPreParedStatement(sql,param);
+
             set = pstmt.executeQuery();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,5 +1,6 @@
 package com.hedgeway.www.service;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -43,5 +44,5 @@ public interface UserService {
 
     //分页查询
     //分页条件查询
-    PageBean<User> findUserByPage(String _currentPage, String _rows, Map<String, String[]> condition);
+    PageBean<User> findUserByPage(String _currentPage, String _rows, Map<String, String[]> condition) throws SQLException;
 }

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -167,36 +168,38 @@ public class UserServlet extends BaseServlet {
     }
 
     public void findUserByPage(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
-        //1.设置编码
         request.setCharacterEncoding("utf-8");
 
-        //2.获取参数
+        //1.获取参数
         String currentPage = request.getParameter("currentPage");//当前页码
-        String rows = request.getParameter("rows");//每页显示的条数
+        String rows = request.getParameter("rows");//每页显示条数
 
-        //分页查询优化：防止currentPage、rows为空，字符转换整数时出现转换异常
-        if (currentPage == null || "".equals(currentPage)){
+        if(currentPage == null || "".equals(currentPage)){
             currentPage = "1";
         }
-        if (rows == null || "".equals(rows)){
+
+
+        if(rows == null || "".equals(rows)){
             rows = "5";
         }
 
-        //复杂条件查询:获取条件查询参数
+        //获取条件查询参数
         Map<String, String[]> condition = request.getParameterMap();
 
-        //3.调用Service查询
-        UserServiceImpl service = new UserServiceImpl();
-        //PageBean<User> pb = service.findUserByPage(currentPage,rows);
-        PageBean<User> pb = service.findUserByPage(currentPage,rows,condition);
-        System.out.println(pb);//测试
 
-        //4.将PageBean存入request域中
+        //2.调用service查询
+        UserService service = new UserServiceImpl();
+        PageBean<User> pb = null;
+        try {
+            pb = service.findUserByPage(currentPage,rows,condition);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        //3.将PageBean存入request
         request.setAttribute("pb",pb);
-        //复杂条件查询优化:回显查询条件,将查询条件存入request
-        request.setAttribute("condition",condition);
-
-        //5.转发到list.jsp
+        request.setAttribute("condition",condition);//将查询条件存入request
+        //4.转发到list.jsp
         request.getRequestDispatcher("/list.jsp").forward(request,response);
     }
 
